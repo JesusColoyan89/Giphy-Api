@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>GIFGASM</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Cookie" rel="
+  stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6">
+        <h1>GIF is love, GIF is life. <br>Eat, Pray, Gif </h1>
+
+        <div class="col-lg-6">
+        <form id="gif-form">
+        <label for ="gif-input"> <h2>BRO lets see some GIFS!</h2></label>
+        <input type="text" id="gif-input"><br>
+
+        <input id="add-gif" type="submit" value="GIF ME">
+        </form>
+        </div>
+      </div>
+
+    
+     </div>
+     <div class="row">
+      <div class="col-lg-6"> 
+  <div id="buttons-view"></div>
+      </div>
+    
+      <div class="col-lg-6">    
+      <div id="gifs-go-here"></div>
+      </div>
+  </div>  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+  var gifs = ["Kevin Spacey", "Derp", "Wtf"];
+
+  function showcontent() {
+    $("#gifs-go-here").empty();
+    var gif = $(this).attr("gifName");
+    var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=8BbotKogWrGayo6CAdX4CMf9ZdkQOnuD&q=" + gif + "&limit=10&offset=0&lang=en";
+    console.log(queryURL);
+    $.ajax({
+      url: queryURL,
+      method: "GET"
+    }).done(function(response){
+
+      for (var i = 0; i < gifs.length; i++) {
+        var image = $("<img>").attr("src", response.data[i].images.original_still.url);
+        var rating = ("<p> Rating: " + response.data[i].rating + "</p>");
+        image.attr("data-state", "still");
+        image.attr("data-still",response.data[i].images.original_still.url);
+        image.attr("data-animate", response.data[i].images.original.url);
+        image.addClass("gif");
+        var newDiv = $("<div>")
+        newDiv.addClass("col-s-4 col-s-12 gifs");
+        newDiv.append(rating, image);
+        $("#gifs-go-here").append(newDiv);
+      };
+    });
+   };
+   $(document).on("click", ".gif", function() {
+      var state = $(this).attr("data-state");
+      if (state === "still") {
+        $(this).attr("src", $(this).attr("data-animate") );
+        $(this).attr("data-state", 'animate');
+      }
+      else if ( state === "animate" ) {
+        $(this).attr("src", $(this).attr("data-still"));
+        $(this).attr("data-state", 'still')
+      }
+   }); 
+
+
+    function renderButtons() {
+       
+        $("#buttons-view").empty();
+        $("#gif-input").val("");
+        for (var i=0; i < gifs.length; i++) {
+          var a= $("<button>");
+          a.addClass("renderedGif");
+          a.attr("gifName", gifs[i]);
+          a.text(gifs[i]);
+          $("#buttons-view").append(a);
+
+        }
+      };
+    $("#add-gif").on("click", function(event) {
+
+      if( $("#gif-input").val()=="" || gifs.indexOf( $("#gif-input").val() ) > -1){
+        return false;
+      }
+      else {
+        gifs.push($("#gif-input").val());
+        $("#buttons-view").append(gifs);
+        event.preventDefault();
+        renderButtons();
+      }
+    });
+    $(document).on("click", ".renderedGif", showcontent);
+     
+
+
+        
+  </script>
+</div>
+</body>
+
+</html>
